@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const connectDB = require('./db/db')
 const authRoute = require('./routes/auth')
+const doubtRoute = require('./routes/doubt')
 const errorHandler = require('./middleware/error')
 const cors = require("cors")
 const { PORT } = require('./config/config')
@@ -18,6 +19,7 @@ const main = async () => {
     app.use(cors(corsOptions))
     
     app.use('/api/auth', authRoute)
+    app.use('/api/doubt', doubtRoute)
 
     app.use(errorHandler)
 
