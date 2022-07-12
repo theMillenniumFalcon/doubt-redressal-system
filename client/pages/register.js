@@ -1,8 +1,8 @@
-import { Box, Input, Flex, Button, Text, Heading } from '@chakra-ui/react'
+import { Box, Input, Flex, Button, Text, Heading, InputRightElement, InputGroup, Checkbox } from '@chakra-ui/react'
 import Layout from '../components/layouts/article'
 import Section from '../components/section'
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { baseURL } from '../constants/baseURL'
 
@@ -12,15 +12,22 @@ const SignUp = () => {
     const [lastname, setLastname] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const [confirmPassword, setConfirmPassword] = useState("")
     const [error, setError] = useState("")
+    const [role, setRole] = useState("")
+    const [show, setShow] = useState(false)
+    const ref = useRef(null)
+
+    console.log('MyRole', role)
+
+    const handleClick = () => setShow(!show)
 
     useEffect(() => {
         if (localStorage.getItem("authToken")) {
-          router.push('/')
+            router.push('/')
         }
-      }, [router])
+    }, [router])
 
+    
     const registerHandler = async (e) => {
         e.preventDefault()
 
@@ -30,20 +37,21 @@ const SignUp = () => {
             },
         }
 
-        if (password !== confirmPassword) {
-            setPassword("")
-            setConfirmPassword("")
-            setTimeout(() => {
-                setError("")
-            }, 5000)
-            return setError("Passwords do not match")
-        }
+        const e1 = document.getElementById('student')
+        const e2 = document.getElementById('ta')
+
+        if (e1.checked == true) {
+            setRole("student")
+        } else if (e2.checked == true) {
+            setRole("ta")
+        } 
 
         try {
             const { data } = await axios.post(
-                `${baseURL}/auth/register`,
+                `${baseURL}/api/auth/register`,
                 {
-                    username,
+                    firstname,
+                    lastname,
                     email,
                     password,
                 },
@@ -66,11 +74,11 @@ const SignUp = () => {
             <Heading as='h2' size='xl'>
                 Sign Up
             </Heading>
-                <Section>
-                    <form onSubmit={registerHandler}>
-                        <Box w="100%" p={7}>
-                            {error && <Text>{error}</Text>}
-                            <Flex align="center" justify="space-between">
+            <Section>
+                <form onSubmit={registerHandler}>
+                    <Box w="100%" p={7}>
+                        {error && <Text color="red">{error}</Text>}
+                        <Flex align="center" justify="space-between">
                             <Box width="45%">
                                 <Text mb={1}>First Name</Text>
                                 <Input placeholder="first name" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
@@ -79,25 +87,39 @@ const SignUp = () => {
                                 <Text mb={1}>Last Name</Text>
                                 <Input placeholder="last name" value={lastname} onChange={(e) => setLastname(e.target.value)} />
                             </Box>
-                            </Flex>
-                            <Box mt={4}>
-                                <Text mb={1}>Email</Text>
-                                <Input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                            </Box>
-                            <Box mt={4}>
-                                <Text mb={1}>Password</Text>
-                                <Input placeholder="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                            </Box>
-                            <Box mt={4}>
-                                <Text mb={1}>Confirm Password</Text>
-                                <Input placeholder="confirm password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-                            </Box>
-                            <Box mt={4}>
-                                <Button type='submit'>Sign Up</Button>
-                            </Box>
+                        </Flex>
+                        <Box mt={4}>
+                            <Text mb={1}>Email</Text>
+                            <Input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </Box>
-                    </form>
-                </Section>
+                        <Box mt={4}>
+                            <Text mb={1}>Password</Text>
+                            <InputGroup size='md'>
+                                <Input
+                                    pr='4.5rem'
+                                    type={show ? 'text' : 'password'}
+                                    placeholder='password'
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                                <InputRightElement width='4.5rem'>
+                                    <Button h='1.75rem' size='sm' onClick={handleClick}>
+                                        {show ? 'Hide' : 'Show'}
+                                    </Button>
+                                </InputRightElement>
+                            </InputGroup>
+                        </Box>
+                        <Box mt={4}>
+                            <Text mb={1}>Role</Text>
+                            <Checkbox ref={ref} id="student">Student</Checkbox>
+                            <Checkbox ref={ref} id="ta" ml={4}>Teaching Assistant</Checkbox>
+                        </Box>
+                        <Box mt={4}>
+                            <Button type='submit'>Sign Up</Button>
+                        </Box>
+                    </Box>
+                </form>
+            </Section>
         </Layout>
     )
 }

@@ -44,8 +44,7 @@ const Navbar = props => {
   const util = (router.asPath.split('/')[1])
   const { path } = props
 
-  // let condition = typeof window !== 'undefined' && localStorage.getItem("authToken")
-  let condition = true
+  let condition = typeof window !== 'undefined' && localStorage.getItem("authToken")
 
   // useEffect(() => {
   //   const getData = async () => {
@@ -66,10 +65,10 @@ const Navbar = props => {
   //   getData()
   // }, [])
 
-  // const logoutHandler = () => {
-  //   localStorage.removeItem("authToken")
-  //   router.replace('/')
-  // }
+  const logoutHandler = () => {
+    localStorage.removeItem("authToken")
+    router.replace('/')
+  }
 
   return (
     <Box
@@ -119,7 +118,7 @@ const Navbar = props => {
         </Stack>
 
         <Box flex={1} align="right">
-          {condition ? (
+          {!condition ? (
             <Button mr={2}>
               {util === "register" ? (
                 <NextLink href="/login" passHref>Login</NextLink>
@@ -128,10 +127,8 @@ const Navbar = props => {
               )}
             </Button>
           ) : null}
-          {!condition ? (
-            <>
-              <Button mr={2}>Logout</Button>
-            </>
+          {condition ? (
+            <Button mr={2} onClick={logoutHandler}>Logout</Button>
           ) : null}
 
           <Box ml={2} display={{ base: 'inline-block', md: 'none' }}>

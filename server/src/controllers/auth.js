@@ -2,10 +2,10 @@ const User = require('../models/User')
 const ErrorResponse = require('../utils/errorResponse')
 
 const register = async (req, res, next) => {
-    const {username, email, password} = req.body
+    const { firstname, lastname, email, password, role } = req.body
     try {
         const user = await User.create({
-            username, email, password
+            firstname, lastname, email, password, role
         })
         sendToken(user, 201, res)
     } catch (error) {

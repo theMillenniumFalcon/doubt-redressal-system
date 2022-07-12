@@ -10,13 +10,14 @@ const DoubtSchema = new mongoose.Schema({
 		required: [true, 'A doubt must have a description'],
 	},
 	commments: {
-		type: [String],
+		type: Array,
+		default: []
 	},
 	creatorId: {
 		type: String,
 		default: ''
 	}
-});
+})
 
 const Doubt = mongoose.model("Doubt", DoubtSchema)
 module.exports = Doubt

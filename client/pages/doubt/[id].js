@@ -4,6 +4,7 @@ import Layout from '../../components/layouts/article'
 import { Answer } from '../../components/answer'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import { EditDeleteBtn } from '../../components/EditDeleteBtn'
 
 const Doubt = () => {
     const router = useRouter()
@@ -26,6 +27,7 @@ const Doubt = () => {
                         <Heading as='h3' size='lg'>
                             How to do Ajax in Rails?
                         </Heading>
+                        <EditDeleteBtn />
                     </Flex>
                     <Text fontSize='md' p={4}>
                         An HSLA color value is specified with: hsla(hue,
