@@ -3,19 +3,48 @@ import Layout from "../components/layouts/article"
 import Section from "../components/section"
 import { useState, useEffect } from 'react'
 import { useRouter } from "next/router"
+import axios from 'axios'
+import { baseURL } from '../constants/baseURL'
 
 const RaiseDoubt = () => {
     const router = useRouter()
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
-    // const [error, setError] = useState("")
+    const [error, setError] = useState("")
 
     useEffect(() => {
-        if (localStorage.getItem("authToken")) {
+        if (!localStorage.getItem("authToken")) {
             router.push('/')
             router.reload()
         }
     }, [router])
+
+    const raiseDoubtHandler = async (e) => {
+        e.preventDefault()
+
+        const config = {
+            header: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+        }
+
+        try {
+            await axios.post(`${baseURL}/api/doubt`, {
+                title,
+                description
+            },
+                config
+            )
+
+            router.push("/")
+        } catch (error) {
+            setError(error.response.data.error)
+            setTimeout(() => {
+                setError("")
+            }, 5000)
+        }
+    }
 
     return (
         <Layout title="Raise Doubt">
@@ -23,9 +52,9 @@ const RaiseDoubt = () => {
                 Raise Doubt
             </Heading>
             <Section>
-                <form>
+                <form onSubmit={raiseDoubtHandler}>
                     <Box w="100%">
-                        {/* {error && <Text>{error}</Text>} */}
+                        {error && <Text>{error}</Text>}
                         <Box mt={4}>
                             <Text mb={1}>Title</Text>
                             <Input placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} />

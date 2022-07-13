@@ -4,7 +4,7 @@ const { getAllDoubts, getDoubt, addDoubt, editDoubt, deleteDoubt } = require('..
 const { protect } = require('../middleware/auth')
 
 router.route('/').get(protect, getAllDoubts)
-router.route('/').post(protect, addDoubt)
+router.route('/').post(addDoubt)
 router.route('/:id').get(protect, getDoubt).patch(protect, editDoubt).delete(protect, deleteDoubt)
 
 module.exports = router

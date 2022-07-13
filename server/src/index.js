@@ -3,7 +3,9 @@ const express = require('express')
 const connectDB = require('./db/db')
 const authRoute = require('./routes/auth')
 const doubtRoute = require('./routes/doubt')
+const userRoute = require('./routes/user')
 const errorHandler = require('./middleware/error')
+const { checkUser } = require('./middleware/checkUser')
 const cors = require("cors")
 const { PORT } = require('./config/config')
 const corsOptions = {
@@ -17,9 +19,12 @@ const main = async () => {
     const app = express()
     app.use(express.json())
     app.use(cors(corsOptions))
+
+    app.get('/', checkUser)
     
     app.use('/api/auth', authRoute)
     app.use('/api/doubt', doubtRoute)
+    app.use('/api/user', userRoute)
 
     app.use(errorHandler)
 

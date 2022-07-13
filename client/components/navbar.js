@@ -46,24 +46,24 @@ const Navbar = props => {
 
   let condition = typeof window !== 'undefined' && localStorage.getItem("authToken")
 
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     const config = {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-  //       },
-  //     }
+  useEffect(() => {
+    const getData = async () => {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      }
 
-  //     try {
-  //       const user = await axios.get(`${baseURL}`, config)
-  //       setUser(user.data)
-  //     } catch (error) {
-  //       localStorage.removeItem("authToken")
-  //     }
+      try {
+        const user = await axios.get(`${baseURL}`, config)
+        setUser(user.data)
+      } catch (error) {
+        localStorage.removeItem("authToken")
+      }
 
-  //   }
-  //   getData()
-  // }, [])
+    }
+    getData()
+  }, [])
 
   const logoutHandler = () => {
     localStorage.removeItem("authToken")
@@ -110,9 +110,11 @@ const Navbar = props => {
               <LinkItem href="/raise-doubt" path={path}>
                 Raise Doubt
               </LinkItem>
-              <LinkItem href="/solve-doubts" path={path}>
-                Solve Doubts
-              </LinkItem>
+              {user.role === "ta" ? (
+                <LinkItem href="/solve-doubts" path={path}>
+                  Solve Doubts
+                </LinkItem>
+              ) : null}
             </>
           ) : null}
         </Stack>
@@ -148,9 +150,11 @@ const Navbar = props => {
                     <NextLink href="/raise-doubt" passHref>
                       <MenuItem as={Link}>Raise Doubt</MenuItem>
                     </NextLink>
-                    <NextLink href="/solve-doubts" passHref>
-                      <MenuItem as={Link}>Solve Doubts</MenuItem>
-                    </NextLink>
+                    {user.role === "ta" ? (
+                      <NextLink href="/solve-doubts" passHref>
+                        <MenuItem as={Link}>Solve Doubts</MenuItem>
+                      </NextLink>
+                    ) : null}
                   </Box>
                 ) : null}
               </MenuList>

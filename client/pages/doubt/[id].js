@@ -1,60 +1,108 @@
-import { Heading, Box, Stack, Flex, Text } from '@chakra-ui/react'
+import { Heading, Box, Stack, Flex, Text, Button, IconButton } from '@chakra-ui/react'
 import Horizontal from '../../components/Horizontal'
 import Layout from '../../components/layouts/article'
 import { Answer } from '../../components/answer'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-import { EditDeleteBtn } from '../../components/EditDeleteBtn'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import { baseURL } from '../../constants/baseURL'
+import NextLink from 'next/link'
+import { MdDelete } from "react-icons/md"
 
 const Doubt = () => {
     const router = useRouter()
+    const [user, setUser] = useState("")
+    const [doubt, setDoubt] = useState({})
+
+    const id = (router.asPath.split('/')[2])
 
     useEffect(() => {
-        if (localStorage.getItem("authToken")) {
+        if (!localStorage.getItem("authToken")) {
             router.push('/')
             router.reload()
         }
-    }, [router])
+        const getData = async () => {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                },
+            }
+
+            try {
+                const user = await axios.get(`${baseURL}`, config)
+                const doubt = await axios.get(`${baseURL}/api/doubt/${id}`, config)
+                setDoubt(doubt.data)
+                setUser(user.data)
+            } catch (error) {
+                // localStorage.removeItem("authToken")
+                // router.replace('/')
+                console.log(error)
+            }
+        }
+        getData()
+    }, [router, id])
+
+    const deleteHandler = async () => {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+        }
+        await axios.delete(`${baseURL}/api/doubt/${id}`, config)
+        router.replace('/')
+    }
 
     return (
         <Layout title="Solve Doubts">
-            <Heading as='h2' size='xl'>
-                Solve Doubts
-            </Heading>
-            <Flex mt={4}>
-                <Box borderWidth="1px" width="60%">
-                    <Flex align="center" justify="space-between" p={4}>
-                        <Heading as='h3' size='lg'>
-                            How to do Ajax in Rails?
-                        </Heading>
-                        <EditDeleteBtn />
-                    </Flex>
-                    <Text fontSize='md' p={4}>
-                        An HSLA color value is specified with: hsla(hue,
-                        saturation, lightness, alpha), where the alpha
-                        parameter defines the opacity. The alpha parameter
-                        is a number between 0.0 (fully transparent) and
-                        1.0 (fully opaque).
-                    </Text>
-                    <Box p={4}>
-                        <Text fontSize='sm' align="right">
-                            Asked by: Nishank Priydarshi on Aug 7, 8: 36
-                        </Text>
-                    </Box>
-                    <Horizontal />
-                    <Box>
-                        <Text fontSize='md' pt={4} pl={4}>
-                            2 Comments
-                        </Text>
-                    </Box>
-                    <Stack spacing={3}>
-                        <Box borderWidth="1px" m={4} p={2}>
-                            Jake: Nice one, I have also the same doubt!
+            {!doubt.doubt ? (
+                <Text>Loading...</Text>
+            ) : (
+                <>
+                    <Heading as='h2' size='xl'>
+                        Solve Doubts
+                    </Heading>
+                    <Flex mt={4}>
+                        <Box borderWidth="1px" width="60%">
+                            <Flex align="center" justify="space-between" p={4}>
+                                <Heading as='h3' size='lg'>
+                                    {doubt.doubt.title}?
+                                </Heading>
+                                {user._id === doubt.doubt.creatorId ? (
+                                    <>
+                                        <Flex>
+                                            <Button mr={2}>
+                                                <NextLink href={`/doubt/edit/${id}`} passHref>Edit Recipe</NextLink>
+                                            </Button>
+                                            <IconButton icon={<MdDelete />} aria-label="Delete Post" onClick={deleteHandler} />
+                                        </Flex>
+                                    </>
+                                ) : null}
+                            </Flex>
+                            <Text fontSize='md' p={4}>
+                                {doubt.doubt.description}
+                            </Text>
+                            <Box p={4}>
+                                <Text fontSize='sm' align="right">
+                                    Asked by: Nishank Priydarshi on Aug 7, 8: 36
+                                </Text>
+                            </Box>
+                            <Horizontal />
+                            <Box>
+                                <Text fontSize='md' pt={4} pl={4}>
+                                    2 Comments
+                                </Text>
+                            </Box>
+                            <Stack spacing={3}>
+                                <Box borderWidth="1px" m={4} p={2}>
+                                    Jake: Nice one, I have also the same doubt!
+                                </Box>
+                            </Stack>
                         </Box>
-                    </Stack>
-                </Box>
-                <Answer />
-            </Flex>
+                        <Answer />
+                    </Flex>
+                </>
+            )}
+
         </Layout>
     )
 }

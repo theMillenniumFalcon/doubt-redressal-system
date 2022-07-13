@@ -54,13 +54,15 @@ const SignUp = () => {
                     lastname,
                     email,
                     password,
+                    role
                 },
                 config
             )
 
             localStorage.setItem("authToken", data.token)
 
-            router.push("/")
+            router.replace("/")
+            router.reload()
         } catch (error) {
             setError(error.response.data.error)
             setTimeout(() => {

@@ -30,7 +30,7 @@ const Login = () => {
 
         try {
             const { data } = await axios.post(
-                `${baseURL}/auth/login`,
+                `${baseURL}/api/auth/login`,
                 {
                     email,
                     password,
@@ -40,7 +40,8 @@ const Login = () => {
 
             localStorage.setItem("authToken", data.token)
 
-            router.push("/")
+            router.replace("/")
+            router.reload()
         } catch (error) {
             setError(error.response.data.error)
             setTimeout(() => {
@@ -57,7 +58,7 @@ const Login = () => {
             <Section>
                 <form onSubmit={loginHandler}>
                     <Box w="100%" p={7}>
-                        {error && <Text>{error}</Text>}
+                        {error && <Text color="red">{error}</Text>}
                         <Box mt={4}>
                             <Text mb={1}>Email</Text>
                             <Input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />

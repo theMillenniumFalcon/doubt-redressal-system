@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const User = require('./User')
 
 const DoubtSchema = new mongoose.Schema({
 	title: {
@@ -13,10 +14,11 @@ const DoubtSchema = new mongoose.Schema({
 		type: Array,
 		default: []
 	},
-	creatorId: {
-		type: String,
-		default: ''
-	}
+	creator : { 
+		type: mongoose.Schema.Types.ObjectId, 
+		ref: 'User' 
+	},
+	createdAt: Date
 })
 
 const Doubt = mongoose.model("Doubt", DoubtSchema)
