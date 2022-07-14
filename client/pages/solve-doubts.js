@@ -31,6 +31,8 @@ const SolveDoubts = () => {
         getData()
     }, [router])
 
+    console.log(doubts.doubts)
+
     return (
         <Layout title="Solve Doubts">
             {!doubts.doubts ? (
@@ -44,24 +46,29 @@ const SolveDoubts = () => {
                             </Heading>
                             <Stack spacing={8} mt={4}>
                                 {doubts?.doubts?.map((item) => !doubts.doubts ? null : (
-                                    <Box key={item._id}>
-                                        <Flex align="center" justify="space-between" borderWidth="1px" px={6} py={4}>
-                                            <Heading as='h4' size='md'>
-                                                {item.title}?
-                                            </Heading>
-                                            <Link href={`/doubt/${item._id}`}
-                                            style={{ textDecoration: 'none'}}
-                                            >
-                                                <Box
-                                                    border="1px solid #fff"
-                                                    backgroundColor="rgba(255, 255, 255, 0.05)"
-                                                    cursor="pointer"
-                                                    py={1}
-                                                    px={10}>
-                                                    Accept
-                                                </Box>
-                                            </Link>
-                                        </Flex>
+                                    <Box>
+                                        {item.answer === undefined ? (
+                                            <Box key={item._id}>
+                                                <Flex align="center" justify="space-between" borderWidth="1px" px={6} py={4}>
+                                                    <Heading as='h4' size='md'>
+                                                        {item.title}?
+                                                    </Heading>
+                                                    <Link href={`/doubt/${item._id}`}
+                                                        style={{ textDecoration: 'none' }}
+                                                    >
+                                                        <Box
+                                                            border="1px solid #fff"
+                                                            backgroundColor="rgba(255, 255, 255, 0.05)"
+                                                            cursor="pointer"
+                                                            py={1}
+                                                            px={10}>
+                                                            Accept
+                                                        </Box>
+                                                    </Link>
+                                                </Flex>
+                                            </Box>
+                                        ) : null}
+
                                     </Box>
                                 ))}
                             </Stack>

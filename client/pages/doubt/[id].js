@@ -1,7 +1,6 @@
-import { Heading, Box, Flex, Text, Button, IconButton } from '@chakra-ui/react'
+import { Heading, Box, Flex, Text, Button, IconButton, Textarea } from '@chakra-ui/react'
 import Horizontal from '../../components/Horizontal'
 import Layout from '../../components/layouts/article'
-import { Answer } from '../../components/answer'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -13,6 +12,9 @@ const Doubt = () => {
     const router = useRouter()
     const [user, setUser] = useState("")
     const [doubt, setDoubt] = useState({})
+    const [comments, setComments] = useState([])
+    const [answer, setAnswer] = useState("")
+    const [error, setError] = useState("")
 
     const id = (router.asPath.split('/')[2])
 
@@ -31,8 +33,10 @@ const Doubt = () => {
             try {
                 const user = await axios.get(`${baseURL}`, config)
                 const doubt = await axios.get(`${baseURL}/api/doubt/${id}`, config)
+                const comments = await axios.get(`${baseURL}/api/doubtComments/${id}/comments`, config)
                 setDoubt(doubt.data)
                 setUser(user.data)
+                setComments(comments.data)
             } catch (error) {
                 // localStorage.removeItem("authToken")
                 // router.replace('/')
@@ -52,9 +56,39 @@ const Doubt = () => {
         router.replace('/')
     }
 
+    const answerHandler = async (e) => {
+        e.preventDefault()
+
+        const config = {
+            header: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+        }
+
+        try {
+            await axios.post(`${baseURL}/api/doubtAnswer/${id}/answer/create`, {
+                answer,
+                doubtId: id,
+                // userId: user._id
+            },
+                config
+            )
+
+            router.push("/solve-doubts")
+            router.reload()
+        } catch (error) {
+            // setError(error.response.data.error)
+            // setTimeout(() => {
+            //     setError("")
+            // }, 5000)
+            console.log(error)
+        }
+    }
+
     return (
         <Layout title="Solve Doubts">
-            {!doubt.doubt ? (
+            {!doubt.doubt && !user && !comments.doubtComments ? (
                 <Text>Loading...</Text>
             ) : (
                 <>
@@ -102,15 +136,26 @@ const Doubt = () => {
                                             )}
                                         </Text>
                                     </Box>
-                                    {doubt?.doubt?.comments?.map((item) => !doubt.doubt.comments ? null : (
+                                    {comments?.doubtComments?.map((item) => !comments.doubtComments ? null : (
                                         <Box borderWidth="1px" m={4} p={2} key={item._id}>
-                                            Jake: {item.comment}
+                                            {item.userId.firstname}: {item.comment}
                                         </Box>
                                     ))}
                                 </Box>
                             )}
                         </Box>
-                        <Answer />
+                        <Box ml={6} borderWidth="1px" width="40%" p={4}>
+                            {error && <Text color="red">{error}</Text>}
+                            <form onSubmit={answerHandler}>
+                                <Box mt={4}>
+                                    <Text mb={1} as="b">Answer:</Text>
+                                    <Textarea mt={2} placeholder="answer" value={answer} onChange={(e) => setAnswer(e.target.value)} />
+                                </Box>
+                                <Box mt={4} align="right">
+                                    <Button type='submit'>Answer</Button>
+                                </Box>
+                            </form>
+                        </Box>
                     </Flex>
                 </>
             )}

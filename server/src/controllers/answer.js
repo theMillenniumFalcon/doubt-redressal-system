@@ -23,6 +23,16 @@ const createAnswer = async (req, res, next) => {
     }
 }
 
+const listAllAnswers = async (req, res, next) => {
+    try {
+        const answers = await Answer.find().populate('userId')
+        res.status(200).json({ success: true, answers })
+        next()
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message })
+    }
+}
+
 module.exports = {
-    createAnswer
+    createAnswer, listAllAnswers
 }

@@ -27,8 +27,8 @@ const main = async () => {
     app.use('/api/auth', authRoute)
     app.use('/api/user', userRoute)
     app.use('/api/doubt', doubtRoute)
-    app.use('/api/doubt', commentRoute)
-    app.use('/api/doubt', answerRoute)
+    app.use('/api/doubtComments', commentRoute)
+    app.use('/api/doubtAnswer', answerRoute)
 
     app.use(errorHandler)
 

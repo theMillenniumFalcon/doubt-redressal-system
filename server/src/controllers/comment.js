@@ -1,6 +1,5 @@
 const Doubt = require('../models/Doubt')
 const Comment = require('../models/Comment')
-const mongoose = require('mongoose')
 
 const createComment = async (req, res, next) => {
     try {
@@ -28,34 +27,26 @@ const createComment = async (req, res, next) => {
     }
 }
 
+const listAllComments = async (req, res, next) => {
+    try {
+        const comments = await Comment.find().populate('userId')
+        res.status(200).json({ success: true, comments })
+        next()
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message })
+    }
+}
+
 const listComments = async (req, res, next) => {
     try {
         const doubtId = req.params.id
-
-        let query=[
-			{
-				$lookup:
-				{
-				 from: "users",
-				 localField: "userId",
-				 foreignField: "_id",
-				 as: "user"
-				}
-			},
-			{$unwind: '$user'},
-            {
-                $match: {
-                    'doubtId': mongoose.Types.ObjectId(doubtId)
-                }
-            }
-		]
-        let comments = await Doubt.aggregate(query)
-        res.status(200).json({ success: true, comments })
+        const doubtComments = await Comment.find({doubtId: doubtId}).populate('userId')
+        res.status(200).json({ success: true, doubtComments })
     } catch (error) {
         res.status(500).json({ success: false, error: error.message })
     }
 }
 
 module.exports = {
-    createComment, listComments
+    createComment, listComments, listAllComments
 }

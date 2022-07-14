@@ -10,19 +10,19 @@ const Home = () => {
   const router = useRouter()
   const [comment, setComment] = useState("")
   const [doubts, setDoubts] = useState([])
+  const [comments, setComments] = useState([])
+  const [answers, setAnswers] = useState([])
   const [error, setError] = useState("")
 
   useEffect(() => {
     const getData = async () => {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      }
-
       try {
-        const doubts = await axios.get(`${baseURL}/api/doubt`, config)
+        const doubts = await axios.get(`${baseURL}/api/doubt`)
+        const comments = await axios.get(`${baseURL}/api/doubtComments`)
+        const answers = await axios.get(`${baseURL}/api/doubtAnswer`)
         setDoubts(doubts.data)
+        setComments(comments.data)
+        setAnswers(answers.data)
       } catch (error) {
         localStorage.removeItem("authToken")
         router.replace('/')
@@ -57,9 +57,11 @@ const Home = () => {
     }
   }
 
+  console.log(answers.answers)
+
   return (
     <Layout>
-      {!doubts.doubts ? (
+      {!doubts.doubts && !comments.comments ? (
         <Text>Loading...</Text>
       ) : (
         <>
@@ -93,14 +95,20 @@ const Home = () => {
                   </Text>
                 </Box>
                 {item.answer === undefined ? null : (
-                  <Box py={4} px={4}>
-                    <Text fontSize='md' align="left">
-                      <Text as="b">Answer:</Text>{' '}
-                      {item.answer.answer}
-                    </Text>
-                    <Text fontSize='sm' align="left" mt={2}>
-                      Answered by Nishank Priydarshi on Aug 7, 8: 36
-                    </Text>
+                  <Box>
+                    {answers?.answers?.map((_item) => !answers.answers ? null : (
+                      <Box py={4} px={4} key={_item._id}>
+                        <Text fontSize='md' align="left">
+                          <Text as="b">Answer:</Text>{' '}
+                          {_item.answer}
+                        </Text>
+                        <Text fontSize='sm' align="left" mt={2}>
+                          Answered by:{' '}
+                          {_item.userId.firstname} {_item.userId.lastname} {' '}
+                          on Aug 7, 8: 36
+                        </Text>
+                      </Box>
+                    ))}
                   </Box>
                 )}
                 <Horizontal />
@@ -116,9 +124,9 @@ const Home = () => {
                         )}
                       </Text>
                     </Box>
-                    {item?.comments?.map((_item) => !item.comments ? null : (
-                      <Box borderWidth="1px" m={4} p={2}>
-                        Jake: {_item.comment}
+                    {comments?.comments?.map((_item) => !comments.comments ? null : (
+                      <Box borderWidth="1px" m={4} p={2} key={_item._id}>
+                        {_item.userId.firstname}: {_item.comment}
                       </Box>
                     ))}
                   </Box>
