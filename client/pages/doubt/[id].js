@@ -13,6 +13,7 @@ const Doubt = () => {
     const router = useRouter()
     const [user, setUser] = useState("")
     const [doubt, setDoubt] = useState({})
+    const [creator, setCreator] = useState("")
 
     const id = (router.asPath.split('/')[2])
 
@@ -42,6 +43,35 @@ const Doubt = () => {
         getData()
     }, [router, id])
 
+    {doubt?.doubt?.comments.map((item) => !doubt.doubt ? null : (
+    console.log(item)
+    ))}
+
+    const util = !doubt.doubt ? null : doubt.doubt.creatorId
+
+    useEffect(() => {
+        if (!localStorage.getItem("authToken")) {
+            router.push('/')
+            router.reload()
+        }
+
+        const getCreator = async () => {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                },
+            }
+
+            try {
+                const creator = await axios.get(`${baseURL}/api/user/${util}`, config)
+                setCreator(creator.data)
+            } catch (error) {
+                console.log('Creator_Error', error)
+            }
+        }
+        getCreator()
+    }, [router, util])
+
     const deleteHandler = async () => {
         const config = {
             headers: {
@@ -54,7 +84,7 @@ const Doubt = () => {
 
     return (
         <Layout title="Solve Doubts">
-            {!doubt.doubt ? (
+            {!doubt.doubt && !creator.user ? (
                 <Text>Loading...</Text>
             ) : (
                 <>
@@ -83,7 +113,10 @@ const Doubt = () => {
                             </Text>
                             <Box p={4}>
                                 <Text fontSize='sm' align="right">
-                                    Asked by: Nishank Priydarshi on Aug 7, 8: 36
+                                    Asked by:{' '}
+                                    {/* {creator.user.firstname} {creator.user.firstname} {' '} */}
+                                    on Aug 7, 8: 36{' '}
+                                    {doubt.doubt.createdAt}
                                 </Text>
                             </Box>
                             <Horizontal />
@@ -102,7 +135,6 @@ const Doubt = () => {
                     </Flex>
                 </>
             )}
-
         </Layout>
     )
 }

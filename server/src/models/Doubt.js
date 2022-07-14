@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const User = require('./User')
 
 const DoubtSchema = new mongoose.Schema({
 	title: {
@@ -10,16 +9,19 @@ const DoubtSchema = new mongoose.Schema({
 		type: String,
 		required: [true, 'A doubt must have a description'],
 	},
-	commments: {
-		type: Array,
-		default: []
-	},
-	creator : { 
+	comments: [{
 		type: mongoose.Schema.Types.ObjectId, 
-		ref: 'User' 
+		ref: 'Comment' 
+	}],
+	answer: {
+		type: String,
+		default: ""
 	},
-	createdAt: Date
-})
+	creatorId: {
+		type: String,
+		required: [true, 'Some problem occured while raising doubt']
+	}
+}, { timestamps: true })
 
 const Doubt = mongoose.model("Doubt", DoubtSchema)
 module.exports = Doubt

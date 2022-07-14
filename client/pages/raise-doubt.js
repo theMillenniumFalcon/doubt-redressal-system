@@ -8,6 +8,7 @@ import { baseURL } from '../constants/baseURL'
 
 const RaiseDoubt = () => {
     const router = useRouter()
+    const [creator, setCreator] = useState("")
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
     const [error, setError] = useState("")
@@ -18,6 +19,25 @@ const RaiseDoubt = () => {
             router.reload()
         }
     }, [router])
+
+    useEffect(() => {
+        const getData = async () => {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                },
+            }
+
+            try {
+                const creator = await axios.get(`${baseURL}`, config)
+                setCreator(creator.data)
+            } catch (error) {
+                localStorage.removeItem("authToken")
+            }
+
+        }
+        getData()
+    }, [])
 
     const raiseDoubtHandler = async (e) => {
         e.preventDefault()
@@ -32,7 +52,8 @@ const RaiseDoubt = () => {
         try {
             await axios.post(`${baseURL}/api/doubt`, {
                 title,
-                description
+                description,
+                creatorId: creator._id
             },
                 config
             )

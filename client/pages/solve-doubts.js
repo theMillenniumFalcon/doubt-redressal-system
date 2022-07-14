@@ -47,7 +47,7 @@ const SolveDoubts = () => {
                                     <Box key={item._id}>
                                         <Flex align="center" justify="space-between" borderWidth="1px" px={6} py={4}>
                                             <Heading as='h4' size='md'>
-                                                {item.title}
+                                                {item.title}?
                                             </Heading>
                                             <Link href={`/doubt/${item._id}`}
                                             style={{ textDecoration: 'none'}}
