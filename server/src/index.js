@@ -4,6 +4,7 @@ const connectDB = require('./db/db')
 const authRoute = require('./routes/auth')
 const doubtRoute = require('./routes/doubt')
 const commentRoute = require('./routes/comment')
+const answerRoute = require('./routes/answer')
 const userRoute = require('./routes/user')
 const errorHandler = require('./middleware/error')
 const { checkUser } = require('./middleware/checkUser')
@@ -24,9 +25,10 @@ const main = async () => {
     app.get('/', checkUser)
     
     app.use('/api/auth', authRoute)
+    app.use('/api/user', userRoute)
     app.use('/api/doubt', doubtRoute)
     app.use('/api/doubt', commentRoute)
-    app.use('/api/user', userRoute)
+    app.use('/api/doubt', answerRoute)
 
     app.use(errorHandler)
 

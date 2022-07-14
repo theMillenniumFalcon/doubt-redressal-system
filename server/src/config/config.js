@@ -1,7 +1,5 @@
-const PORT = parseInt(process.env.PORT)
-
-const baseURL = `http://localhost:${PORT}`
+const PORT = parseInt(process.env.PORT) || 4000
 
 module.exports = {
-    PORT, baseURL
+    PORT
 }

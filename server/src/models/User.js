@@ -29,7 +29,11 @@ const UserSchema = new mongoose.Schema({
     role: {
         type: String,
         required: [true, "Please enter your role"],
-    }
+    },
+    doubts: [{
+		type: mongoose.Schema.Types.ObjectId, 
+		ref: 'Doubt' 
+	}],
 })
 
 UserSchema.pre("save", async function (next) {

@@ -14,13 +14,13 @@ const DoubtSchema = new mongoose.Schema({
 		ref: 'Comment' 
 	}],
 	answer: {
-		type: String,
-		default: ""
-	},
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Answer'
+    },
 	creatorId: {
-		type: String,
-		required: [true, 'Some problem occured while raising doubt']
-	}
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }
 }, { timestamps: true })
 
 const Doubt = mongoose.model("Doubt", DoubtSchema)

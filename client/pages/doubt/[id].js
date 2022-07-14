@@ -1,4 +1,4 @@
-import { Heading, Box, Stack, Flex, Text, Button, IconButton } from '@chakra-ui/react'
+import { Heading, Box, Flex, Text, Button, IconButton } from '@chakra-ui/react'
 import Horizontal from '../../components/Horizontal'
 import Layout from '../../components/layouts/article'
 import { Answer } from '../../components/answer'
@@ -13,7 +13,6 @@ const Doubt = () => {
     const router = useRouter()
     const [user, setUser] = useState("")
     const [doubt, setDoubt] = useState({})
-    const [creator, setCreator] = useState("")
 
     const id = (router.asPath.split('/')[2])
 
@@ -43,35 +42,6 @@ const Doubt = () => {
         getData()
     }, [router, id])
 
-    {doubt?.doubt?.comments.map((item) => !doubt.doubt ? null : (
-    console.log(item)
-    ))}
-
-    const util = !doubt.doubt ? null : doubt.doubt.creatorId
-
-    useEffect(() => {
-        if (!localStorage.getItem("authToken")) {
-            router.push('/')
-            router.reload()
-        }
-
-        const getCreator = async () => {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-                },
-            }
-
-            try {
-                const creator = await axios.get(`${baseURL}/api/user/${util}`, config)
-                setCreator(creator.data)
-            } catch (error) {
-                console.log('Creator_Error', error)
-            }
-        }
-        getCreator()
-    }, [router, util])
-
     const deleteHandler = async () => {
         const config = {
             headers: {
@@ -84,7 +54,7 @@ const Doubt = () => {
 
     return (
         <Layout title="Solve Doubts">
-            {!doubt.doubt && !creator.user ? (
+            {!doubt.doubt ? (
                 <Text>Loading...</Text>
             ) : (
                 <>
@@ -97,7 +67,7 @@ const Doubt = () => {
                                 <Heading as='h3' size='lg'>
                                     {doubt.doubt.title}?
                                 </Heading>
-                                {user._id === doubt.doubt.creatorId ? (
+                                {user._id === doubt.doubt.creatorId._id ? (
                                     <>
                                         <Flex>
                                             <Button mr={2}>
@@ -114,22 +84,31 @@ const Doubt = () => {
                             <Box p={4}>
                                 <Text fontSize='sm' align="right">
                                     Asked by:{' '}
-                                    {/* {creator.user.firstname} {creator.user.firstname} {' '} */}
+                                    {doubt.doubt.creatorId.firstname} {doubt.doubt.creatorId.lastname} {' '}
                                     on Aug 7, 8: 36{' '}
                                     {doubt.doubt.createdAt}
                                 </Text>
                             </Box>
                             <Horizontal />
-                            <Box>
-                                <Text fontSize='md' pt={4} pl={4}>
-                                    2 Comments
-                                </Text>
-                            </Box>
-                            <Stack spacing={3}>
-                                <Box borderWidth="1px" m={4} p={2}>
-                                    Jake: Nice one, I have also the same doubt!
+                            {doubt.doubt.comments.length === 0 ? null : (
+                                <Box>
+                                    <Box>
+                                        <Text fontSize='md' pt={4} pl={4}>
+                                            {doubt.doubt.comments.length}{' '}
+                                            {doubt.doubt.comments.length === 1 ? (
+                                                <>Comment</>
+                                            ) : (
+                                                <>Comments</>
+                                            )}
+                                        </Text>
+                                    </Box>
+                                    {doubt?.doubt?.comments?.map((item) => !doubt.doubt.comments ? null : (
+                                        <Box borderWidth="1px" m={4} p={2} key={item._id}>
+                                            Jake: {item.comment}
+                                        </Box>
+                                    ))}
                                 </Box>
-                            </Stack>
+                            )}
                         </Box>
                         <Answer />
                     </Flex>

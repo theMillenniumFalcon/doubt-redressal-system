@@ -115,6 +115,11 @@ const Navbar = props => {
                   Solve Doubts
                 </LinkItem>
               ) : null}
+              {user.role === "student" ? (
+                <LinkItem href="/chat" path={path}>
+                  Chat
+                </LinkItem>
+              ) : null}
             </>
           ) : null}
         </Stack>
@@ -153,6 +158,11 @@ const Navbar = props => {
                     {user.role === "ta" ? (
                       <NextLink href="/solve-doubts" passHref>
                         <MenuItem as={Link}>Solve Doubts</MenuItem>
+                      </NextLink>
+                    ) : null}
+                    {user.role === "student" ? (
+                      <NextLink href="/chat" passHref>
+                        <MenuItem as={Link}>Chat</MenuItem>
                       </NextLink>
                     ) : null}
                   </Box>

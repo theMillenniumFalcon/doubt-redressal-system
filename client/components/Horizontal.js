@@ -2,7 +2,7 @@ import { Box } from "@chakra-ui/react"
 
 const Horizontal = () => {
     return (
-        <Box mt={4}>
+        <Box>
             <hr />
         </Box>
     )

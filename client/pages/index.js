@@ -1,21 +1,15 @@
-import {
-  Heading,
-  Box,
-  Stack,
-  Flex,
-  Text,
-  Input
-} from '@chakra-ui/react'
+import { Heading, Box, Stack, Flex, Text, Input } from '@chakra-ui/react'
 import Layout from '../components/layouts/article'
 import Horizontal from '../components/Horizontal'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { useRouter } from 'next/router'
 import { baseURL } from '../constants/baseURL'
 
 const Home = () => {
+  const router = useRouter()
   const [comment, setComment] = useState("")
   const [doubts, setDoubts] = useState([])
-  const [creator, setCreator] = useState("")
   const [error, setError] = useState("")
 
   useEffect(() => {
@@ -30,37 +24,12 @@ const Home = () => {
         const doubts = await axios.get(`${baseURL}/api/doubt`, config)
         setDoubts(doubts.data)
       } catch (error) {
-        // localStorage.removeItem("authToken")
-        // router.replace('/')
-        console.log(error)
+        localStorage.removeItem("authToken")
+        router.replace('/')
       }
     }
     getData()
-  }, [])
-
-  // {doubts?.doubts?.map((item) => !doubts.doubts ? null : (
-  //   console.log(item.creatorId)
-  // ))}
-
-  // useEffect(() => {
-  //   const getCreator = async () => {
-  //     const config = {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-  //       },
-  //     }
-
-  //     try {
-  //       {doubts?.doubts?.map(async (item) => !doubts.doubts ? null : (
-  //         await axios.get(`${baseURL}/api/user/${item.creatorId}`, config)
-  //       ))}
-  //       setCreator(creator.data)
-  //     } catch (error) {
-  //       console.log('Creator_Error', error)
-  //     }
-  //   }
-  //   getCreator()
-  // })
+  }, [router])
 
   const commentHandler = async (e) => {
     e.preventDefault()
@@ -104,7 +73,7 @@ const Home = () => {
                   <Heading as='h3' size='lg'>
                     {item.title}?
                   </Heading>
-                  {item.answer === "" ? null : (
+                  {item.answer === undefined ? null : (
                     <Box
                       border="1px solid #00FF00"
                       backgroundColor="rgba(0, 255, 0, 0.2)"
@@ -120,14 +89,14 @@ const Home = () => {
                 </Text>
                 <Box p={4}>
                   <Text fontSize='sm' align="right">
-                    Asked by: Nishank Priydarshi on Aug 7, 8: 36
+                    Asked by: {item.creatorId.firstname} {item.creatorId.lastname} on Aug 7, 8: 36
                   </Text>
                 </Box>
-                {item.answer === "" ? null : (
-                  <Box pt={4} px={4}>
+                {item.answer === undefined ? null : (
+                  <Box py={4} px={4}>
                     <Text fontSize='md' align="left">
                       <Text as="b">Answer:</Text>{' '}
-                      {item.answer}
+                      {item.answer.answer}
                     </Text>
                     <Text fontSize='sm' align="left" mt={2}>
                       Answered by Nishank Priydarshi on Aug 7, 8: 36
@@ -135,19 +104,28 @@ const Home = () => {
                   </Box>
                 )}
                 <Horizontal />
-                <Box>
-                  <Text fontSize='md' pt={4} pl={4}>
-                    2 Comments
-                  </Text>
-                </Box>
-                <Stack spacing={3}>
-                  <Box borderWidth="1px" m={4} p={2}>
-                    Jake: Nice one, I have also the same doubt!
+                {item.comments.length === 0 ? null : (
+                  <Box>
+                    <Box>
+                      <Text fontSize='md' pt={4} pl={4}>
+                        {item.comments.length}{' '}
+                        {item.comments.length === 1 ? (
+                          <>Comment</>
+                        ) : (
+                          <>Comments</>
+                        )}
+                      </Text>
+                    </Box>
+                    {item?.comments?.map((_item) => !item.comments ? null : (
+                      <Box borderWidth="1px" m={4} p={2}>
+                        Jake: {_item.comment}
+                      </Box>
+                    ))}
                   </Box>
-                </Stack>
+                )}
                 <form onSubmit={commentHandler}>
-                {error && <Text color="red">{error}</Text>}
-                  <Flex px={4} mb={4} align="center" justify="space-between">
+                  {error && <Text color="red">{error}</Text>}
+                  <Flex px={4} my={4} align="center" justify="space-between">
                     <Input
                       variant='filled'
                       placeholder="Add Comment"
@@ -168,11 +146,9 @@ const Home = () => {
                 </form>
               </Box>
             ))}
-
           </Stack>
         </>
       )}
-
     </Layout>
   )
 }
