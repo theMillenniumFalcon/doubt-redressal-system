@@ -56,6 +56,7 @@ npm run dev
 ### client
     .
     ├── components              # React components
+    ├── constants               # constants
     ├── lib                     # utils
     ├── pages                   # nextJS pages
     ├── public                  # assets
@@ -67,17 +68,17 @@ npm run dev
     ├── ...
     ├── src                     # Source files
     │   ├── ...
-    │   ├── controllers         # Controllers for database schemas
-    │   ├── db                  # Database connection file
-    │   ├── middleware          # Middleware functions
-    │   ├── models              # MongoDB models
+    │   ├── config              # config files
+    │   ├── controllers         # controllers for database schemas
+    │   ├── db                  # database connection file
+    │   ├── middleware          # middleware functions
+    │   ├── models              # mongoDB models
     │   ├── routers             # routers
-    │   ├── uploads             # static files
-    │   ├── utils               # Utils
+    │   ├── utils               # utils
     |   ├── index.js            # Starting point
     │   └── ...
     └── ...
 
 ### I have another question!
 
-Feel free to ask me on [Twitter](https://twitter.com/nishankstwt)! You can also email us at nishankpr435@gmail.com.
+Feel free to ask me on [Twitter](https://twitter.com/nishankstwt)! You can also email me at nishankpr435@gmail.com.
