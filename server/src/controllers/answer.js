@@ -7,7 +7,7 @@ const createAnswer = async (req, res, next) => {
         const answerBody = new Answer({
             answer: req.body.answer,
             doubtId: doubtId,
-            userId: req.user._id
+            userId: req.body.userId
         })
         
         const answer = await answerBody.save()

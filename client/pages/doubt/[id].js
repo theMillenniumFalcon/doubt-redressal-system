@@ -69,13 +69,12 @@ const Doubt = () => {
         try {
             await axios.post(`${baseURL}/api/doubtAnswer/${id}/answer/create`, {
                 answer,
-                doubtId: id,
-                // userId: user._id
+                userId: user._id
             },
                 config
             )
 
-            router.push("/solve-doubts")
+            router.push("/")
             router.reload()
         } catch (error) {
             // setError(error.response.data.error)

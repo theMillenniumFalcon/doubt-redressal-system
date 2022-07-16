@@ -6,6 +6,7 @@ const doubtRoute = require('./routes/doubt')
 const commentRoute = require('./routes/comment')
 const answerRoute = require('./routes/answer')
 const userRoute = require('./routes/user')
+const messageRoute = require('./routes/message')
 const errorHandler = require('./middleware/error')
 const { checkUser } = require('./middleware/checkUser')
 const cors = require("cors")
@@ -29,6 +30,7 @@ const main = async () => {
     app.use('/api/doubt', doubtRoute)
     app.use('/api/doubtComments', commentRoute)
     app.use('/api/doubtAnswer', answerRoute)
+    app.use("/api/messages", messageRoute)
 
     app.use(errorHandler)
 

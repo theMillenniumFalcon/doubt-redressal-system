@@ -67,8 +67,9 @@ const SolveDoubts = () => {
                                                     </Link>
                                                 </Flex>
                                             </Box>
-                                        ) : null}
-
+                                        ) : (
+                                            <Text>All doubts are solved</Text>
+                                        )}
                                     </Box>
                                 ))}
                             </Stack>
