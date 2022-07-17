@@ -5,7 +5,6 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { baseURL } from '../../constants/baseURL'
-import NextLink from 'next/link'
 import { MdDelete } from "react-icons/md"
 
 const Doubt = () => {
@@ -56,9 +55,7 @@ const Doubt = () => {
         router.replace('/')
     }
 
-    const answerHandler = async (e) => {
-        e.preventDefault()
-
+    const answerHandler = async () => {
         const config = {
             header: {
                 "Content-Type": "application/json",
@@ -77,11 +74,10 @@ const Doubt = () => {
             router.push("/")
             router.reload()
         } catch (error) {
-            // setError(error.response.data.error)
-            // setTimeout(() => {
-            //     setError("")
-            // }, 5000)
-            console.log(error)
+            setError(error.response.data.error)
+            setTimeout(() => {
+                setError("")
+            }, 5000)
         }
     }
 
@@ -101,14 +97,7 @@ const Doubt = () => {
                                     {doubt.doubt.title}?
                                 </Heading>
                                 {user._id === doubt.doubt.creatorId._id ? (
-                                    <>
-                                        <Flex>
-                                            <Button mr={2}>
-                                                <NextLink href={`/doubt/edit/${id}`} passHref>Edit Recipe</NextLink>
-                                            </Button>
-                                            <IconButton icon={<MdDelete />} aria-label="Delete Post" onClick={deleteHandler} />
-                                        </Flex>
-                                    </>
+                                    <IconButton icon={<MdDelete />} aria-label="Delete Post" onClick={deleteHandler} />
                                 ) : null}
                             </Flex>
                             <Text fontSize='md' p={4}>

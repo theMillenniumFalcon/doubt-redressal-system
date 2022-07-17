@@ -5,6 +5,6 @@ const { protect } = require('../middleware/auth')
 
 router.route('/').get(listAllComments)
 router.route('/:id/comments').get(protect, listComments)
-router.route('/:id/comment/create').post(protect, createComment)
+router.route('/comment/create').post(createComment)
 
 module.exports = router

@@ -18,9 +18,6 @@ const RaiseDoubt = () => {
             router.push('/')
             router.reload()
         }
-    }, [router])
-
-    useEffect(() => {
         const getData = async () => {
             const config = {
                 headers: {
@@ -33,15 +30,15 @@ const RaiseDoubt = () => {
                 setCreator(creator.data)
             } catch (error) {
                 localStorage.removeItem("authToken")
+                router.push('/')
             }
 
         }
         getData()
-    }, [])
+    }, [router])
 
     const raiseDoubtHandler = async (e) => {
         e.preventDefault()
-
         const config = {
             header: {
                 "Content-Type": "application/json",
@@ -75,7 +72,7 @@ const RaiseDoubt = () => {
             <Section>
                 <form onSubmit={raiseDoubtHandler}>
                     <Box w="100%">
-                        {error && <Text>{error}</Text>}
+                        {error && <Text color="red">{error}</Text>}
                         <Box mt={4}>
                             <Text mb={1}>Title</Text>
                             <Input placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} />

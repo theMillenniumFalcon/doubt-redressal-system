@@ -19,6 +19,7 @@ PORT=
 DATABASE_URL=
 JWT_SECRET=
 JWT_EXPIRE=
+CLIENT_URL=
 ```
 
 ## Installation

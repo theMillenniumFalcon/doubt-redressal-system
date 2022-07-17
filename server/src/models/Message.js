@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const MessageSchema = new mongoose.Schema({
     message: {
         type: String,
-        required: [true, 'A message cannnot be empty'],
+        required: [true, 'A message cannot be empty'],
     },
     users: Array,
     sender: {

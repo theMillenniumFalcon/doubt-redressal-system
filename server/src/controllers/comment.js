@@ -3,17 +3,16 @@ const Comment = require('../models/Comment')
 
 const createComment = async (req, res, next) => {
     try {
-        const doubtId = req.params.id
         const commentBody = new Comment({
             comment: req.body.comment,
-            doubtId: doubtId,
-            userId: req.user._id
+            doubtId: req.body.doubtId,
+            userId: req.body.userId
         })
         
         const comment = await commentBody.save()
 
         await Doubt.updateOne(
-            {_id: doubtId},
+            {_id: req.body.doubtId},
             {
                 $push: {
                     comments: comment._id

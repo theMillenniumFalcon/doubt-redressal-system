@@ -115,11 +115,9 @@ const Navbar = props => {
                   Solve Doubts
                 </LinkItem>
               ) : null}
-              {user.role === "student" ? (
-                <LinkItem href="/chat" path={path}>
-                  Chat
-                </LinkItem>
-              ) : null}
+              <LinkItem href="/chat" path={path}>
+                Chat
+              </LinkItem>
             </>
           ) : null}
         </Stack>
@@ -160,11 +158,9 @@ const Navbar = props => {
                         <MenuItem as={Link}>Solve Doubts</MenuItem>
                       </NextLink>
                     ) : null}
-                    {user.role === "student" ? (
-                      <NextLink href="/chat" passHref>
-                        <MenuItem as={Link}>Chat</MenuItem>
-                      </NextLink>
-                    ) : null}
+                    <NextLink href="/chat" passHref>
+                      <MenuItem as={Link}>Chat</MenuItem>
+                    </NextLink>
                   </Box>
                 ) : null}
               </MenuList>

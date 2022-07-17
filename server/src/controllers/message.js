@@ -1,10 +1,10 @@
-const Messages = require("../models/Message")
+const Message = require("../models/Message")
 
 const getMessages = async (req, res, next) => {
     try {
         const { from, to } = req.body
 
-        const messages = await Messages.find({
+        const messages = await Message.find({
             users: {
                 $all: [from, to],
             },
@@ -13,7 +13,7 @@ const getMessages = async (req, res, next) => {
         const projectedMessages = messages.map((msg) => {
             return {
                 fromSelf: msg.sender.toString() === from,
-                message: msg.message.text,
+                message: msg.message,
             }
         })
         res.status(200).json({ success: true, projectedMessages })
@@ -25,8 +25,8 @@ const getMessages = async (req, res, next) => {
 const addMessage = async (req, res, next) => {
     try {
         const { from, to, message } = req.body
-        const data = await Messages.create({
-            message: { text: message },
+        const data = await Message.create({
+            message: message,
             users: [from, to],
             sender: from,
         })

@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require('express')
+const socket = require("socket.io")
 const connectDB = require('./db/db')
 const authRoute = require('./routes/auth')
 const doubtRoute = require('./routes/doubt')
@@ -12,9 +13,9 @@ const { checkUser } = require('./middleware/checkUser')
 const cors = require("cors")
 const { PORT } = require('./config/config')
 const corsOptions = {
-    origin:'*', 
-    credentials:true,
-    optionSuccessStatus:200,
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+    optionSuccessStatus: 200,
 }
 
 const main = async () => {
@@ -24,7 +25,7 @@ const main = async () => {
     app.use(cors(corsOptions))
 
     app.get('/', checkUser)
-    
+
     app.use('/api/auth', authRoute)
     app.use('/api/user', userRoute)
     app.use('/api/doubt', doubtRoute)
@@ -36,6 +37,28 @@ const main = async () => {
 
     const server = app.listen(PORT, () => {
         console.log(`listening on port ${PORT}`)
+    })
+
+    const io = socket(server, {
+        cors: {
+            origin: process.env.CLIENT_URL,
+            credentials: true,
+        },
+    })
+
+    global.onlineUsers = new Map()
+    io.on("connection", (socket) => {
+        global.chatSocket = socket
+        socket.on("add-user", (userId) => {
+            onlineUsers.set(userId, socket.id)
+        })
+
+        socket.on("send-msg", (data) => {
+            const sendUserSocket = onlineUsers.get(data.to)
+            if (sendUserSocket) {
+                socket.to(sendUserSocket).emit("msg-recieve", data.msg)
+            }
+        })
     })
 
     process.on('unhandledRejection', (err, promise) => {
