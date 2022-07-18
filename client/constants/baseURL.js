@@ -1,1 +1,1 @@
-export const baseURL = 'https://studentpal.herokuapp.com/'
+export const baseURL = 'https://studentpal.herokuapp.com'
