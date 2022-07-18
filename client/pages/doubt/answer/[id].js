@@ -50,9 +50,13 @@ const Doubt = () => {
     }, [router, id])
 
     const [answerData, setAnswerData] = useState({
-        description: '',
-        creatorId: user._id
+        answer: '',
+        userId: ''
     })
+
+    if (user) {
+        answerData.userId = user._id
+    }
 
     const answerHandler = async (e) => {
         e.preventDefault()

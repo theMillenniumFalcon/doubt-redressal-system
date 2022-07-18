@@ -25,7 +25,7 @@ JWT_EXPIRE=
 ## Installation
 
 ```bash
-https://github.com/theMillenniumFalcon/FSD-task
+https://github.com/theMillenniumFalcon/doubt-redressal-system
 ```
 
 ```bash
