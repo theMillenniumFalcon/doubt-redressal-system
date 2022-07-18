@@ -33,8 +33,7 @@ const Doubt = () => {
 
     useEffect(() => {
         if (!localStorage.getItem("authToken")) {
-            router.push('/')
-            router.reload()
+            router.push('/login')
         }
         const getData = async () => {
             const config = {
@@ -110,9 +109,11 @@ const Doubt = () => {
                             <Box p={4}>
                                 <Text fontSize='sm' align="right">
                                     Asked by:{' '}
-                                    {doubt.doubt.creatorId?.firstname} {doubt.doubt.creatorId?.lastname} {' '}
-                                    on Aug 7, 8: 36{' '}
-                                    {doubt.doubt.createdAt}
+                                    {doubt.doubt.creatorId?.firstname} {doubt.doubt.creatorId?.lastname} on{' '}
+                                    {new Date(doubt.doubt?.createdAt).getDate()}{'-'}
+                                    {new Date(doubt.doubt?.createdAt).getMonth() + 1}{'-'}
+                                    {new Date(doubt.doubt?.createdAt).getFullYear()}{','}{' '}{'at'}{' '}
+                                    {doubt.doubt?.createdAt.substring(11, 16)}
                                 </Text>
                             </Box>
                             <Horizontal />
