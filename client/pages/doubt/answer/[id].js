@@ -1,10 +1,10 @@
-import { Heading, Box, Flex, Text, IconButton, Input, Button } from '@chakra-ui/react'
-import Horizontal from '../../components/Horizontal'
-import Layout from '../../components/layouts/article'
+import { Heading, Box, Flex, Text, Button, IconButton, Textarea } from '@chakra-ui/react'
+import Horizontal from '../../../components/Horizontal'
+import Layout from '../../../components/layouts/article'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { baseURL } from '../../constants/baseURL'
+import { baseURL } from '../../../constants/baseURL'
 import { MdDelete } from "react-icons/md"
 import NextLink from 'next/link'
 
@@ -13,10 +13,10 @@ const Doubt = () => {
     const [user, setUser] = useState("")
     const [doubt, setDoubt] = useState({})
     const [comments, setComments] = useState([])
-    const [comment, setComment] = useState("")
+    const [answer, setAnswer] = useState("")
     const [error, setError] = useState("")
 
-    const id = (router.asPath.split('/')[2])
+    const id = (router.asPath.split('/')[3])
 
     useEffect(() => {
         if (!localStorage.getItem("authToken")) {
@@ -40,29 +40,11 @@ const Doubt = () => {
             } catch (error) {
                 // localStorage.removeItem("authToken")
                 // router.replace('/')
+                console.log(error)
             }
         }
         getData()
     }, [router, id])
-
-    useEffect(() => {
-        const getData = async () => {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-                },
-            }
-
-            try {
-                const user = await axios.get(`${baseURL}`, config)
-                setUser(user.data)
-            } catch (error) {
-                localStorage.removeItem("authToken")
-            }
-
-        }
-        getData()
-    }, [])
 
     const deleteHandler = async () => {
         const config = {
@@ -74,9 +56,7 @@ const Doubt = () => {
         router.replace('/')
     }
 
-    const commentHandler = async (e) => {
-        e.preventDefault()
-
+    const answerHandler = async () => {
         const config = {
             header: {
                 "Content-Type": "application/json",
@@ -85,18 +65,17 @@ const Doubt = () => {
         }
 
         try {
-            await axios.post(`${baseURL}/api/doubtComments/comment/create`, {
-                comment,
-                doubtId: id,
+            await axios.post(`${baseURL}/api/doubtAnswer/${id}/answer/create`, {
+                answer,
                 userId: user._id
-
             },
                 config
             )
 
+            router.push("/")
             router.reload()
         } catch (error) {
-            setError(error.response?.data.error)
+            setError(error.response.data.error)
             setTimeout(() => {
                 setError("")
             }, 5000)
@@ -104,8 +83,8 @@ const Doubt = () => {
     }
 
     return (
-        <Layout title="Doubt">
-            {!doubt.doubt ? (
+        <Layout title="Solve Doubts">
+            {!doubt.doubt && !user && !comments.doubtComments ? (
                 <Text>Loading...</Text>
             ) : (
                 <>
@@ -113,7 +92,7 @@ const Doubt = () => {
                         Solve Doubts
                     </Heading>
                     <Flex mt={4}>
-                        <Box borderWidth="1px" width="100%">
+                        <Box borderWidth="1px" width="60%">
                             <Flex align="center" justify="space-between" p={4}>
                                 <Heading as='h3' size='lg'>
                                     {doubt.doubt.title}?
@@ -151,35 +130,23 @@ const Doubt = () => {
                                             )}
                                         </Text>
                                     </Box>
-                                    {!comments.doubtComments ? (
-                                        <Text>Loading...</Text>
-                                    ) : (
-                                        <>
-                                            {comments?.doubtComments?.map((item) => !comments.doubtComments ? null : (
-                                                <Box borderWidth="1px" m={4} p={2} key={item._id}>
-                                                    {item.userId.firstname}: {item.comment}
-                                                </Box>
-                                            ))}
-                                        </>
-                                    )}
+                                    {comments?.doubtComments?.map((item) => !comments.doubtComments ? null : (
+                                        <Box borderWidth="1px" m={4} p={2} key={item._id}>
+                                            {item.userId.firstname}: {item.comment}
+                                        </Box>
+                                    ))}
                                 </Box>
                             )}
-                            <form onSubmit={commentHandler}>
-                                <Box px={4} my={4} >
-                                    {error && <Text color="red">{error.substring(36)}</Text>}
-                                    <Flex align="center" justify="space-between">
-                                        <Input
-                                            variant='filled'
-                                            placeholder="Add Comment"
-                                            value={comment}
-                                            onChange={(e) => setComment(e.target.value)} />
-                                        <Button
-                                            ml={4}
-                                            type='submit'
-                                        >
-                                            Comment
-                                        </Button>
-                                    </Flex>
+                        </Box>
+                        <Box ml={6} borderWidth="1px" width="40%" p={4}>
+                            {error && <Text color="red">{error}</Text>}
+                            <form onSubmit={answerHandler}>
+                                <Box mt={4}>
+                                    <Text mb={1} as="b">Answer:</Text>
+                                    <Textarea mt={2} placeholder="answer" value={answer} onChange={(e) => setAnswer(e.target.value)} />
+                                </Box>
+                                <Box mt={4} align="right">
+                                    <Button type='submit'>Answer</Button>
                                 </Box>
                             </form>
                         </Box>

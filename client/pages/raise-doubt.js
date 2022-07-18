@@ -5,12 +5,12 @@ import { useState, useEffect } from 'react'
 import { useRouter } from "next/router"
 import axios from 'axios'
 import { baseURL } from '../constants/baseURL'
+import { useDispatch } from "react-redux"
+import { createDoubt } from '../actions/doubts'
 
 const RaiseDoubt = () => {
     const router = useRouter()
     const [creator, setCreator] = useState("")
-    const [title, setTitle] = useState("")
-    const [description, setDescription] = useState("")
     const [error, setError] = useState("")
 
     useEffect(() => {
@@ -37,31 +37,47 @@ const RaiseDoubt = () => {
         getData()
     }, [router])
 
-    const raiseDoubtHandler = async (e) => {
+    console.log(creator._id)
+
+    const [doubtData, setDoubtData] = useState({
+        title: '',
+        description: '',
+        creatorId: creator._id
+    })
+
+    const dispatch = useDispatch()
+
+    // const raiseDoubtHandler = async (e) => {
+    //     e.preventDefault()
+    //     const config = {
+    //         header: {
+    //             "Content-Type": "application/json",
+    //             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+    //         },
+    //     }
+
+    //     try {
+    //         await axios.post(`${baseURL}/api/doubt`, {
+    //             title,
+    //             description,
+    //             creatorId: creator._id
+    //         },
+    //             config
+    //         )
+
+    //         router.push("/")
+    //     } catch (error) {
+    //         setError(error.response.data.error)
+    //         setTimeout(() => {
+    //             setError("")
+    //         }, 5000)
+    //     }
+    // }
+
+    const raiseDoubtHandler = (e) => {
         e.preventDefault()
-        const config = {
-            header: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
-        }
-
-        try {
-            await axios.post(`${baseURL}/api/doubt`, {
-                title,
-                description,
-                creatorId: creator._id
-            },
-                config
-            )
-
-            router.push("/")
-        } catch (error) {
-            setError(error.response.data.error)
-            setTimeout(() => {
-                setError("")
-            }, 5000)
-        }
+        dispatch(createDoubt(doubtData))
+        router.push('/')
     }
 
     return (
@@ -75,11 +91,17 @@ const RaiseDoubt = () => {
                         {error && <Text color="red">{error}</Text>}
                         <Box mt={4}>
                             <Text mb={1}>Title</Text>
-                            <Input placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                            <Input 
+                            placeholder="title" 
+                            value={doubtData.title} 
+                            onChange={(e) => setDoubtData({ ...doubtData, title: e.target.value})} />
                         </Box>
                         <Box mt={4}>
                             <Text mb={1}>Description</Text>
-                            <Input placeholder="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                            <Input
+                            placeholder="description" 
+                            value={doubtData.description} 
+                            onChange={(e) => setDoubtData({ ...doubtData, description: e.target.value})} />
                         </Box>
                         <Flex align="center" justify="space-between" mt={4}>
                             <Button type='submit'>Ask Doubt</Button>

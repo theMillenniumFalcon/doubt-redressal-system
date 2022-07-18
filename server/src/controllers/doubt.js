@@ -27,19 +27,32 @@ const addDoubt = async (req, res, next) => {
             description: req.body.description,
             creatorId: req.body.creatorId
         })
-        
+
         const doubt = await doubtBody.save()
 
         await User.updateOne(
-            {_id: req.body.creatorId},
+            { _id: req.body.creatorId },
             {
                 $push: {
                     doubts: doubt._id
                 }
             }
         )
-    
+
         res.status(200).json({ success: true, doubt })
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message })
+    }
+}
+const editDoubt = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const updates = req.body
+        const options = { new: true }
+
+        const editedDoubt = await Doubt.findByIdAndUpdate(id, updates, options)
+
+        res.status(200).json({ success: true, editedDoubt })
     } catch (error) {
         res.status(500).json({ success: false, error: error.message })
     }
@@ -57,5 +70,5 @@ const deleteDoubt = async (req, res, next) => {
 }
 
 module.exports = {
-    getAllDoubts, getDoubt, addDoubt, deleteDoubt
+    getAllDoubts, getDoubt, addDoubt, editDoubt, deleteDoubt
 }

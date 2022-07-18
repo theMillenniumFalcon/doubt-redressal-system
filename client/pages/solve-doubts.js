@@ -55,7 +55,7 @@ const SolveDoubts = () => {
                                                 <Heading as='h4' size='md'>
                                                     {item.title}?
                                                 </Heading>
-                                                <Link href={`/doubt/${item._id}`}
+                                                <Link href={`/doubt/answer/${item._id}`}
                                                     style={{ textDecoration: 'none' }}
                                                 >
                                                     <Box

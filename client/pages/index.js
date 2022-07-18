@@ -1,28 +1,37 @@
-import { Heading, Box, Stack, Flex, Text, Input, Button } from '@chakra-ui/react'
+import { Heading, Box, Stack, Flex, Text, Link } from '@chakra-ui/react'
 import Layout from '../components/layouts/article'
 import Horizontal from '../components/Horizontal'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { baseURL } from '../constants/baseURL'
+import { useDispatch, useSelector } from 'react-redux'
+import { getDoubts } from '../actions/doubts'
+import { getComments } from '../actions/comments'
 
 const Home = () => {
   const router = useRouter()
-  const [comment, setComment] = useState("")
-  const [doubts, setDoubts] = useState([])
   const [comments, setComments] = useState([])
   const [answers, setAnswers] = useState([])
-  const [error, setError] = useState("")
-  const [user, setUser] = useState("")
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(getDoubts())
+  }, [dispatch])
+
+  
+
+  const doubts = useSelector((state) => state.doubts)
+  const _comments = useSelector((state) => state.comments)
+  // console.log(_comments)
 
   useEffect(() => {
     const getData = async () => {
-      
+
       try {
-        const doubts = await axios.get(`${baseURL}/api/doubt`)
         const comments = await axios.get(`${baseURL}/api/doubtComments`)
         const answers = await axios.get(`${baseURL}/api/doubtAnswer`)
-        setDoubts(doubts.data)
         setComments(comments.data)
         setAnswers(answers.data)
       } catch (error) {
@@ -32,54 +41,6 @@ const Home = () => {
     }
     getData()
   }, [router])
-
-  useEffect(() => {
-    const getData = async () => {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      }
-
-      try {
-        const user = await axios.get(`${baseURL}`, config)
-        setUser(user.data)
-      } catch (error) {
-        localStorage.removeItem("authToken")
-      }
-
-    }
-    getData()
-  }, [])
-
-  const commentHandler = async (e) => {
-    e.preventDefault()
-
-    const config = {
-      header: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-      },
-    }
-
-    try {
-      await axios.post(`${baseURL}/api/doubtComments/comment/create`, {
-        comment,
-        // doubtId,
-        userId: user._id
-
-      },
-        config
-      )
-
-      router.reload()
-    } catch (error) {
-      setError(error.response?.data.error)
-      setTimeout(() => {
-        setError("")
-      }, 5000)
-    }
-  }
 
   return (
     <Layout>
@@ -95,7 +56,9 @@ const Home = () => {
               <Box borderWidth="1px" key={item._id}>
                 <Flex align="center" justify="space-between" p={4}>
                   <Heading as='h3' size='lg'>
-                    {item.title}?
+                    <Link href={`/doubt/${item._id}`}>
+                      {item.title}?
+                    </Link>
                   </Heading>
                   {item.answer === undefined ? null : (
                     <Box
@@ -151,31 +114,16 @@ const Home = () => {
                       </Text>
                     </Box>
                     {comments?.comments?.map((_item) => !comments.comments ? null : (
-                      <Box borderWidth="1px" m={4} p={2} key={_item._id}>
-                        {_item.userId.firstname}: {_item.comment}
-                      </Box>
+                      <>
+                        {_item.doubtId === item._id ? (
+                          <Box borderWidth="1px" m={4} p={2} key={_item._id}>
+                            {_item.userId.firstname}: {_item.comment}
+                          </Box>
+                        ) : null}
+                      </>
                     ))}
                   </Box>
                 )}
-                <form onSubmit={commentHandler}>
-                  <Box px={4} my={4} >
-                    {error && <Text color="red">{error.substring(36)}</Text>}
-                    <Flex align="center" justify="space-between">
-                      <Input
-                        variant='filled'
-                        placeholder="Add Comment"
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)} />
-                      <Button
-                        ml={4}
-                        type='submit'
-                      >
-                        Comment
-                      </Button>
-                    </Flex>
-                  </Box>
-
-                </form>
               </Box>
             ))}
           </Stack>
