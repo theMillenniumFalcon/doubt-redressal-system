@@ -2,8 +2,10 @@ const mongoose = require('mongoose')
 
 const MessageSchema = new mongoose.Schema({
     message: {
-        type: String,
-        required: [true, 'A message cannot be empty'],
+        text: {
+            type: String,
+            required: [true, 'A message cannot be empty'],
+        }
     },
     users: Array,
     sender: {

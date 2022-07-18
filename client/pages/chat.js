@@ -1,4 +1,4 @@
-import { Box, Input, Button, Heading, Flex, Stack, Text } from '@chakra-ui/react'
+import { Box, Heading, Flex, Stack, Text } from '@chakra-ui/react'
 import Layout from '../components/layouts/article'
 import Section from '../components/section'
 import { useRouter } from 'next/router'
@@ -9,16 +9,15 @@ import Horizontal from '../components/Horizontal'
 import { ChatBox } from '../components/ChatBox'
 import { io } from 'socket.io-client'
 import { v4 as uuidv4 } from "uuid"
+import { ChatInput } from '../components/ChatInput'
 
 const Chat = () => {
     const socket = useRef()
     const scrollRef = useRef()
     const router = useRouter()
-    const [msg, setMsg] = useState("")
     const [users, setUsers] = useState([])
     const [user, setUser] = useState("")
     const [currentChat, setCurrentChat] = useState("")
-    const [error, setError] = useState("")
     const [messages, setMessages] = useState([])
     const [arrivalMessage, setArrivalMessage] = useState(null)
 
@@ -71,17 +70,14 @@ const Chat = () => {
                     setMessages(messages.data)
                 }
             } catch (error) {
-                // localStorage.removeItem("authToken")
-                // router.replace('/')
-                console.log(error)
+                localStorage.removeItem("authToken")
+                router.replace('/')
             }
         }
         getData()
-    }, [currentChat, user._id])
+    }, [currentChat, router, user._id])
 
-    const sendMessageHandler = async (e) => {
-        e.preventDefault()
-
+    const sendMessageHandler = async (msg) => {
         const config = {
             header: {
                 "Content-Type": "application/json",
@@ -90,29 +86,28 @@ const Chat = () => {
         }
 
         try {
+            socket.current.emit("send-msg", {
+                to: currentChat._id,
+                from: user._id,
+                msg,
+            })
+
             await axios.post(`${baseURL}/api/messages/addmsg`, {
                 from: user._id,
                 to: currentChat._id,
-                message: msg
-            },
-                config
-            )
+                message: msg,
+            }, config)
 
-            socket.current.emit("send-msg", {
-                from: user._id,
-                to: currentChat._id,
-                message: msg
-            })
-
-            const msgs = {...messages}
-            msgs.add({ fromSelf: true, message: msg })
+            const msgs = [...messages]
+            msgs.push({ fromSelf: true, message: msg })
             setMessages(msgs)
 
         } catch (error) {
-            setError(error.response.data.error)
-            setTimeout(() => {
-                setError("")
-            }, 5000)
+            // setError(error.response.data.error)
+            // setTimeout(() => {
+            //     setError("")
+            // }, 5000)
+            console.log(error)
         }
     }
 
@@ -208,11 +203,11 @@ const Chat = () => {
                                             width="100%"
                                             overflow="auto"
                                         >
-                                            {!messages.projectedMessages ? null : messages?.projectedMessages.length === 0 ? (
+                                            {!messages ? null : messages?.length === 0 ? (
                                                 <Text>Messages will be displayed here</Text>
                                             ) : (
                                                 <Box>
-                                                    {messages?.projectedMessages?.map((item) => !messages.projectedMessages ? (
+                                                    {messages?.map((item) => !messages ? (
                                                         <Text>Loading...</Text>
                                                     ) : (
                                                         <Box key={uuidv4()} align={item.fromSelf ? "right" : "left"} ref={scrollRef}>
@@ -226,19 +221,7 @@ const Chat = () => {
                                 </Box>
                             </Flex>
                             <Horizontal />
-                            <form onSubmit={sendMessageHandler}>
-                                <Box px={4} mb={4} pt={4}>
-                                    {error && <Text color="red">{error.substring(36)}</Text>}
-                                    <Flex align="center" justify="space-between">
-                                        <Input
-                                            variant='filled'
-                                            placeholder="type your message here..."
-                                            value={msg}
-                                            onChange={(e) => setMsg(e.target.value)} />
-                                        <Button ml={4} type='submit'>Send message</Button>
-                                    </Flex>
-                                </Box>
-                            </form>
+                            <ChatInput sendMessageHandler={sendMessageHandler} />
                         </Box>
                     </Section>
                 </>

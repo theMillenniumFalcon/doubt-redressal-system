@@ -1,5 +1,6 @@
 const Doubt = require('../models/Doubt')
 const User = require('../models/User')
+const Answer = require('../models/Answer')
 
 const getAllDoubts = async (req, res, next) => {
     try {
@@ -59,10 +60,13 @@ const editDoubt = async (req, res, next) => {
 }
 
 const deleteDoubt = async (req, res, next) => {
-    const deleteDoubt = Doubt.findById(req.params.id)
+    const deleteDoubt = await Doubt.findById(req.params.id)
+    // const deleteDoubtAnswer = await Answer.findById(deleteDoubt.answer)
+    // const doubtCreator = await User.findById(deleteDoubt.creatorId)
 
     try {
         await deleteDoubt.remove()
+        // await deleteDoubtAnswer.remove()
         res.status(200).json({ success: true })
     } catch (error) {
         res.status(500).json({ success: false, error: error.message })

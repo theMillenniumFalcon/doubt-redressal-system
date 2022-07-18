@@ -7,24 +7,18 @@ import { useRouter } from 'next/router'
 import { baseURL } from '../constants/baseURL'
 import { useDispatch, useSelector } from 'react-redux'
 import { getDoubts } from '../actions/doubts'
-import { getComments } from '../actions/comments'
 
 const Home = () => {
   const router = useRouter()
   const [comments, setComments] = useState([])
   const [answers, setAnswers] = useState([])
-
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(getDoubts())
   }, [dispatch])
 
-  
-
   const doubts = useSelector((state) => state.doubts)
-  const _comments = useSelector((state) => state.comments)
-  // console.log(_comments)
 
   useEffect(() => {
     const getData = async () => {
@@ -76,7 +70,11 @@ const Home = () => {
                 </Text>
                 <Box p={4}>
                   <Text fontSize='sm' align="right">
-                    Asked by: {item.creatorId.firstname} {item.creatorId.lastname} on Aug 7, 8: 36
+                    Asked by: {item.creatorId?.firstname} {item.creatorId?.lastname} on{' '}
+                    {new Date(item?.createdAt).getDate()}{'-'}
+                    {new Date(item?.createdAt).getMonth() + 1}{'-'}
+                    {new Date(item?.createdAt).getFullYear()}{','}{' '}{'at'}{' '}
+                    {item?.createdAt.substring(11, 16)}
                   </Text>
                 </Box>
                 {item.answer === undefined ? null : (
@@ -91,8 +89,11 @@ const Home = () => {
                             </Text>
                             <Text fontSize='sm' align="left" mt={2}>
                               Answered by:{' '}
-                              {_item.userId.firstname} {_item.userId.lastname} {' '}
-                              on Aug 7, 8: 36
+                              {_item.userId?.firstname} {_item.userId?.lastname} {' '}
+                              {new Date(_item?.createdAt).getDate()}{'-'}
+                              {new Date(_item?.createdAt).getMonth() + 1}{'-'}
+                              {new Date(_item?.createdAt).getFullYear()}{','}{' '}{'at'}{' '}
+                              {_item?.createdAt.substring(11, 16)}
                             </Text>
                           </Box>
                         ) : null}

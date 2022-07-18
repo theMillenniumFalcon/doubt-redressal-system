@@ -7,16 +7,29 @@ import axios from 'axios'
 import { baseURL } from '../../constants/baseURL'
 import { MdDelete } from "react-icons/md"
 import NextLink from 'next/link'
+import { useDispatch, useSelector } from 'react-redux'
+import { getOneDoubt, deleteDoubt } from '../../actions/doubts'
+import { createComment } from '../../actions/comments'
+import { getUser } from '../../actions/users'
 
 const Doubt = () => {
     const router = useRouter()
-    const [user, setUser] = useState("")
-    const [doubt, setDoubt] = useState({})
     const [comments, setComments] = useState([])
-    const [comment, setComment] = useState("")
-    const [error, setError] = useState("")
 
     const id = (router.asPath.split('/')[2])
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(getOneDoubt(id))
+    }, [dispatch, id])
+
+    useEffect(() => {
+        dispatch(getUser())
+    }, [dispatch])
+
+    const doubt = useSelector((state) => state.doubts)
+    const user = useSelector((state) => state.users)
 
     useEffect(() => {
         if (!localStorage.getItem("authToken")) {
@@ -31,11 +44,7 @@ const Doubt = () => {
             }
 
             try {
-                const user = await axios.get(`${baseURL}`, config)
-                const doubt = await axios.get(`${baseURL}/api/doubt/${id}`, config)
                 const comments = await axios.get(`${baseURL}/api/doubtComments/${id}/comments`, config)
-                setDoubt(doubt.data)
-                setUser(user.data)
                 setComments(comments.data)
             } catch (error) {
                 // localStorage.removeItem("authToken")
@@ -45,62 +54,30 @@ const Doubt = () => {
         getData()
     }, [router, id])
 
-    useEffect(() => {
-        const getData = async () => {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-                },
-            }
+    const [commentData, setCommentData] = useState({
+        comment: '',
+        doubtId: '',
+        userId: ''
+    })
 
-            try {
-                const user = await axios.get(`${baseURL}`, config)
-                setUser(user.data)
-            } catch (error) {
-                localStorage.removeItem("authToken")
-            }
-
-        }
-        getData()
-    }, [])
-
-    const deleteHandler = async () => {
-        const config = {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
-        }
-        await axios.delete(`${baseURL}/api/doubt/${id}`, config)
-        router.replace('/')
+    if (id) {
+        commentData.doubtId = id
     }
 
-    const commentHandler = async (e) => {
+    if (user._id) {
+        commentData.userId = user._id
+    }
+
+    const deleteHandler = (e) => {
         e.preventDefault()
+        dispatch(deleteDoubt(id))
+        router.push('/')
+    }
 
-        const config = {
-            header: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
-        }
-
-        try {
-            await axios.post(`${baseURL}/api/doubtComments/comment/create`, {
-                comment,
-                doubtId: id,
-                userId: user._id
-
-            },
-                config
-            )
-
-            router.reload()
-        } catch (error) {
-            setError(error.response?.data.error)
-            setTimeout(() => {
-                setError("")
-            }, 5000)
-        }
+    const commentHandler = (e) => {
+        e.preventDefault()
+        dispatch(createComment(commentData))
+        router.push('/')
     }
 
     return (
@@ -118,7 +95,7 @@ const Doubt = () => {
                                 <Heading as='h3' size='lg'>
                                     {doubt.doubt.title}?
                                 </Heading>
-                                {user._id === doubt.doubt.creatorId._id ? (
+                                {user._id === doubt.doubt?.creatorId?._id ? (
                                     <Flex>
                                         <Button mr={2}>
                                             <NextLink href={`/doubt/edit/${id}`} passHref>Edit Recipe</NextLink>
@@ -133,7 +110,7 @@ const Doubt = () => {
                             <Box p={4}>
                                 <Text fontSize='sm' align="right">
                                     Asked by:{' '}
-                                    {doubt.doubt.creatorId.firstname} {doubt.doubt.creatorId.lastname} {' '}
+                                    {doubt.doubt.creatorId?.firstname} {doubt.doubt.creatorId?.lastname} {' '}
                                     on Aug 7, 8: 36{' '}
                                     {doubt.doubt.createdAt}
                                 </Text>
@@ -165,14 +142,13 @@ const Doubt = () => {
                                 </Box>
                             )}
                             <form onSubmit={commentHandler}>
-                                <Box px={4} my={4} >
-                                    {error && <Text color="red">{error.substring(36)}</Text>}
+                                <Box px={4} my={4}>
                                     <Flex align="center" justify="space-between">
                                         <Input
                                             variant='filled'
                                             placeholder="Add Comment"
-                                            value={comment}
-                                            onChange={(e) => setComment(e.target.value)} />
+                                            value={commentData.comment}
+                                            onChange={(e) => setCommentData({ ...commentData, comment: e.target.value })} />
                                         <Button
                                             ml={4}
                                             type='submit'

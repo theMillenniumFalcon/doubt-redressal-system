@@ -1,12 +1,13 @@
 import { FETCH_ALL, CREATE } from '../constants/actionTypes/answer'
 
-export const reducer = (doubts = [], action) => {
+// eslint-disable-next-line import/no-anonymous-default-export
+export default (answers = [], action) => {
     switch (action.type) {
         case FETCH_ALL:
             return action.payload
         case CREATE:
-            return [...doubts, action.payload]
+            return [...answers, action.payload]
         default:
-            return doubts
+            return answers
     }
 }
