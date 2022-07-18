@@ -26,6 +26,10 @@ const main = async () => {
 
     app.get('/', checkUser)
 
+    app.get('/testServer', (req, res) => {
+        res.send('Server is working fine!')
+    })
+
     app.use('/api/auth', authRoute)
     app.use('/api/user', userRoute)
     app.use('/api/doubt', doubtRoute)
